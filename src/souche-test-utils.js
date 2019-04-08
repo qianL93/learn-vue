@@ -20,6 +20,7 @@ const DEFAULT_OPTS = {
         VuePosition : false, // 定位
     }
 };
+
 const USE_MAP = {
     Vuex        : 'vuex',
     Router      : '@souche-vue/souche-router',
@@ -34,21 +35,35 @@ const USE_MAP = {
     VueValidator: '@souche-vue/vue-validator',
     VuePosition : '@souche-vue/vue-position'
 };
-const DEFAULT_CONFS = { };
+
+function requireUse(use) {
+   if (typeof use === 'string') {
+       const modName = USE_MAP[use] || use;
+       try {  
+           const mod = require(modName);
+           return mod && mod.default || mod;
+       } catch (e) {
+           return false;
+       }
+   } else {
+       return use;
+   }
+}
 
 const create = function (Component, opts = { }) {
+
     let mergeOpts = mergeDeepRight(DEFAULT_OPTS, opts);
 
-    return function () {
+    return function LocalVue() {
+
         const localVue = createLocalVue();
-        
+
         Object.keys(utils).forEach(k => {
-            localVue[k] = function (confs) {
-                let mergeConfs = mergeDeepRight(DEFAULT_CONFS, confs);
+            localVue[k] = function (mergeOpts) {
                 
                 return typeof utils[k] === 'function' && utils[k].call(null, Component, Object.assign({ }, {
                     localVue
-                }, mergeConfs));
+                }, mergeOpts));
             }
         });
 
@@ -60,16 +75,16 @@ const create = function (Component, opts = { }) {
             Object.keys(mergeOpts.use).forEach((k, v) => {
                 
             });
-            mergeOpts.use.forEach(use => {
-                let useRes = use;
-                if (typeof use === 'function') {
-                    useRes = use();
+            Object.keys(mergeOpts.use).forEach(use => {
+                let useRes = mergeOpts.use[use];
+                if (typeof useRes === 'function') {
+                    useRes = useRes();
                     if (useRes && typeof useRes.then === 'function') {
-                        return useRes.then(res => res && localVue.use(USE_MAP[use] || use)); 
+                        return useRes.then(res => res && requireUse(use) && localVue.use(requireUse(use))); 
                     }
                 }
-                if (useRes) {
-                    localVue.use(USE_MAP[use] || use);
+                if (useRes && requireUse(use)) {
+                    localVue.use(requireUse(use));
                 }
             });
         }
