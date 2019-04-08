@@ -1,0 +1,22 @@
+{
+    "name": "@souche-vue/souche-test-utils",
+    "version": "1.0.0",
+    "description": "单元测试封装",
+    "main": "lib/souche-test-utils.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "babel src -d lib"
+    },
+    "author": "wanyuxiao",
+    "license": "ISC",
+    "dependencies": {
+        "@vue/test-utils": "^1.0.0-beta.29",
+        "ramda": "^0.26.1",
+        "vue": "^2.6.10"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.4.0",
+        "@babel/preset-env": "^7.4.2",
+        "vue-template-compiler": "^2.6.10"
+    }
+}
