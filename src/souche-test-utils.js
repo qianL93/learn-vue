@@ -20,7 +20,6 @@ const DEFAULT_OPTS = {
         VuePosition : false, // 定位
     }
 };
-
 const USE_MAP = {
     Vuex        : 'vuex',
     Router      : '@souche-vue/souche-router',
@@ -35,21 +34,21 @@ const USE_MAP = {
     VueValidator: '@souche-vue/vue-validator',
     VuePosition : '@souche-vue/vue-position'
 };
+const DEFAULT_CONFS = { };
 
 const create = function (Component, opts = { }) {
-
     let mergeOpts = mergeDeepRight(DEFAULT_OPTS, opts);
 
-    return function LocalVue() {
-
+    return function () {
         const localVue = createLocalVue();
-
+        
         Object.keys(utils).forEach(k => {
-            localVue[k] = function (mergeOpts) {
+            localVue[k] = function (confs) {
+                let mergeConfs = mergeDeepRight(DEFAULT_CONFS, confs);
                 
                 return typeof utils[k] === 'function' && utils[k].call(null, Component, Object.assign({ }, {
                     localVue
-                }, mergeOpts));
+                }, mergeConfs));
             }
         });
 
