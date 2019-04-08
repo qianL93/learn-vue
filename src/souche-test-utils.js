@@ -61,7 +61,18 @@ const create = function (Component, opts = { }) {
             Object.keys(mergeOpts.use).forEach((k, v) => {
                 
             });
-            mergeOpts.use.forEach(localVue.use);
+            mergeOpts.use.forEach(use => {
+                let useRes = use;
+                if (typeof use === 'function') {
+                    useRes = use();
+                    if (useRes && typeof useRes.then === 'function') {
+                        return useRes.then(res => res && localVue.use(USE_MAP[use] || use)); 
+                    }
+                }
+                if (useRes) {
+                    localVue.use(USE_MAP[use] || use);
+                }
+            });
         }
         
         return localVue; 
